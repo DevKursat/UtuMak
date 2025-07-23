@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ÜtüMAk</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .product-card img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: contain;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .product-card h3 {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        .product-card p {
+            font-size: 1.1em;
+            color: #007bff;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .product-card button {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .product-card button:hover {
+            background-color: #218838;
+        }
+        .cart-section {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .cart-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+        .cart-item-info {
+            flex-grow: 1;
+        }
+        .cart-item-info h4 {
+            margin: 0;
+            font-size: 1em;
+        }
+        .cart-item-info p {
+            margin: 0;
+            color: #666;
+        }
+        .cart-total {
+            text-align: right;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .checkout-button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .checkout-button:hover {
+            background-color: #0056b3;
+        }
+        #cartItems {
+            min-height: 50px; /* To prevent layout shift */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ÜtüMAk Ürünleri</h1>
+        <div class="product-list" id="productList"></div>
+
+        <div class="cart-section">
+            <h2>Sepetim</h2>
+            <div id="cartItems"></div>
+            <div class="cart-total" id="cartTotal"></div>
+            <button class="checkout-button" onclick="confirmOrder()">Siparişi Onayla</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        async function fetchProducts() {
+            const response = await fetch('/api/products');
+            const products = await response.json();
+            const productListDiv = document.getElementById('productList');
+            productListDiv.innerHTML = '';
+            products.forEach(product => {
+                const productCard = `
+                    <div class="product-card">
+                        <img src="${product.imageUrl}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p>${product.price.toFixed(2)} TL</p>
+                        <button onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.imageUrl}')">Sepete Ekle</button>
+                    </div>
+                `;
+                productListDiv.innerHTML += productCard;
+            });
+            renderCart();
+        }
+
+        function addToCart(id, name, price, imageUrl) {
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ id, name, price, imageUrl, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function renderCart() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartTotalDiv = document.getElementById('cartTotal');
+            cartItemsDiv.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p style="text-align: center; color: #666;">Sepetiniz boş.</p>';
+                cartTotalDiv.textContent = '';
+                return;
+            }
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                const cartItemHtml = `
+                    <div class="cart-item">
+                        <img src="${item.imageUrl}" alt="${item.name}">
+                        <div class="cart-item-info">
+                            <h4>${item.name} (x${item.quantity})</h4>
+                            <p>${item.price.toFixed(2)} TL</p>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})">Kaldır</button>
+                    </div>
+                `;
+                cartItemsDiv.innerHTML += cartItemHtml;
+            });
+
+            cartTotalDiv.textContent = `Toplam: ${total.toFixed(2)} TL`;
+        }
+
+        function confirmOrder() {
+            if (cart.length === 0) {
+                alert('Sepetiniz boş. Lütfen önce ürün ekleyin.');
+                return;
+            }
+
+            let orderDetails = "Merhaba, ÜtüMAk siparişim:\n";
+            let total = 0;
+            let imageUrls = [];
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                orderDetails += `- ${item.name} (x${item.quantity}) - ${item.price.toFixed(2)} TL (Toplam: ${itemTotal.toFixed(2)} TL)\n`;
+                imageUrls.push(item.imageUrl);
+            });
+
+            orderDetails += `\nGenel Toplam: ${total.toFixed(2)} TL\n\n`;
+            orderDetails += `Ürün Görselleri:\n${imageUrls.join('\n')}`;
+
+            const whatsappUrl = `https://wa.me/905335114689?text=${encodeURIComponent(orderDetails)}`;
+            window.open(whatsappUrl, '_blank');
+
+            // Clear cart after order confirmation
+            cart = [];
+            localStorage.removeItem('cart');
+            renderCart();
+            alert('Siparişiniz WhatsApp üzerinden gönderilmek üzere hazırlandı!');
+        }
+
+        fetchProducts();
+    </script>
+</body>
+</html>
