@@ -1,0 +1,1 @@
+Use cross-env for PUBLIC_URL in build script
