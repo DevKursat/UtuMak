@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -12,7 +13,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 app.use(cors());
 app.use(express.json());
-// app.use('/images', express.static(path.join(__dirname, 'images'))); // Resimler Supabase'den gelecekse bu satır kaldırılabilir
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // --- API Endpoints ---
 
