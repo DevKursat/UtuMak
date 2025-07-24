@@ -6,5 +6,5 @@
       "config": { "distDir": "build" }
     }
   ],
-  "buildCommand": "npm --prefix client run build"
+  "buildCommand": "cd client && npm run build"
 }
