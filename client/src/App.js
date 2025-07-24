@@ -1,5 +1,7 @@
 import React from 'react';
-import { HashRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
+import { Navbar, Nav, Container } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import Home from './Home';
 import Admin from './Admin';
 import AboutUs from './AboutUs';
@@ -10,25 +12,22 @@ function App() {
   return (
     <Router>
       <div className="App d-flex flex-column min-vh-100">
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-          <div className="container">
-            <Link className="navbar-brand" to="/">ÜtüMak</Link>
-            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarNav">
-              <ul className="navbar-nav ms-auto">
-                <li className="nav-item">
-                  <Link className="nav-link" to="/">Anasayfa</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/about">Hakkımızda</Link>
-                </li>
-                
-              </ul>
-            </div>
-          </div>
-        </nav>
+        <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
+          <Container>
+            <Navbar.Brand as={Link} to="/">ÜtüMak</Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="ms-auto">
+                <LinkContainer to="/">
+                  <Nav.Link>Anasayfa</Nav.Link>
+                </LinkContainer>
+                <LinkContainer to="/about">
+                  <Nav.Link>Hakkımızda</Nav.Link>
+                </LinkContainer>
+              </Nav>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
 
         <main className="container mt-5 flex-grow-1">
           <Routes>

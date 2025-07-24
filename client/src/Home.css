@@ -2,11 +2,11 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 1000;
+  z-index: 1050; /* Navbar'dan daha yüksek */
 }
 
 .fab {
-  background-color: #28a745; /* Bootstrap success color */
+  background-color: #007bff; /* Bootstrap primary color */
   color: white;
   border-radius: 50%;
   width: 60px;
@@ -23,11 +23,11 @@
 }
 
 .fab:hover {
-  background-color: #218838; /* Darker success color on hover */
+  background-color: #0056b3; /* Darker primary color on hover */
 }
 
 .fab i {
-  margin-right: 5px;
+  margin-right: 0; /* İkonun yanında metin olmadığı için */
 }
 
 .cart-badge {
@@ -42,4 +42,6 @@
   white-space: nowrap;
   vertical-align: baseline;
   display: inline-block;
+  background-color: #dc3545; /* Bootstrap danger color */
+  color: white;
 }
