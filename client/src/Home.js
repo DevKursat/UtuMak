@@ -175,7 +175,10 @@ function Home() {
       {cart.length > 0 && (
         <div className="fab-container">
           <button className="fab" onClick={handleShowModal}>
-            <i className="bi bi-cart-fill"></i> {cart.reduce((total, item) => total + item.quantity, 0)}
+            <i className="bi bi-cart-fill"></i>
+            <span className="badge bg-danger rounded-pill cart-badge">
+              {cart.reduce((total, item) => total + item.quantity, 0)}
+            </span>
           </button>
         </div>
       )}

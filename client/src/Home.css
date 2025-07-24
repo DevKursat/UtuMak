@@ -19,6 +19,7 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  position: relative; /* Badge konumlandırması için */
 }
 
 .fab:hover {
@@ -27,4 +28,18 @@
 
 .fab i {
   margin-right: 5px;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px; /* İkonun biraz üzerine */
+  right: -5px; /* İkonun biraz sağına */
+  padding: .25em .6em; /* Boyutunu ayarla */
+  border-radius: 50%;
+  font-size: 0.75em; /* Yazı boyutunu küçült */
+  line-height: 1; /* Satır yüksekliğini ayarla */
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  display: inline-block;
 }
