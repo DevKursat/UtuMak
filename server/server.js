@@ -11,7 +11,11 @@ const supabaseUrl = 'https://fsdrgcanlppombckyoei.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzZHJnY2FubHBwb21iY2t5b2VpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzMDUyNzIsImV4cCI6MjA2ODg4MTI3Mn0.Utbp1oSRh0-WVBfgu5_iDKFIHmtIz1REkRzupSEP0Ig';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-app.use(cors());
+app.use(cors({
+  origin: ['https://utumak.bykursat.me', 'https://devkursat.github.io'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
