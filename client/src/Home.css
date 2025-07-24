@@ -18,7 +18,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.1s ease; /* Animasyon için transform eklendi */
   position: relative; /* Badge konumlandırması için */
 }
 
@@ -44,4 +44,15 @@
   display: inline-block;
   background-color: #dc3545; /* Kırmızı, dikkat çekici */
   color: white;
+}
+
+/* Sepete ekleme animasyonu */
+.animate-cart {
+  animation: pop 0.5s ease-in-out;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }

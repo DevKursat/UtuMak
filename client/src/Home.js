@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button } from 'react-bootstrap';
-import './Home.css'; // FAB için yeni CSS dosyası ekliyorum
+import './Home.css';
 
 function Home() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showCartModal, setShowCartModal] = useState(false); // Sepet modalı için
+  const [showProductModal, setShowProductModal] = useState(false); // Ürün detayı modalı için
+  const [selectedProduct, setSelectedProduct] = useState(null); // Seçilen ürün
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
+  const [cartAnimation, setCartAnimation] = useState(false); // Sepet animasyonu için
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -46,6 +49,8 @@ function Home() {
         return [...prevCart, { ...product, quantity: 1 }];
       }
     });
+    setCartAnimation(true); // Animasyonu başlat
+    setTimeout(() => setCartAnimation(false), 500); // Animasyonu bitir
   };
 
   const removeFromCart = (productId) => {
@@ -80,8 +85,17 @@ function Home() {
     return cart.reduce((total, item) => total + parseFloat(item.price) * item.quantity, 0).toFixed(2);
   };
 
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
+  const handleShowCartModal = () => setShowCartModal(true);
+  const handleCloseCartModal = () => setShowCartModal(false);
+
+  const handleShowProductModal = (product) => {
+    setSelectedProduct(product);
+    setShowProductModal(true);
+  };
+  const handleCloseProductModal = () => {
+    setSelectedProduct(null);
+    setShowProductModal(false);
+  };
 
   const sendWhatsAppOrder = () => {
     if (cart.length === 0) {
@@ -110,7 +124,7 @@ function Home() {
     const whatsappPhoneNumber = '905335114689'; // Lütfen bu numarayı güncelleyin!
     const whatsappUrl = `https://wa.me/${whatsappPhoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
-    handleCloseModal();
+    handleCloseCartModal();
   };
 
   return (
@@ -146,21 +160,14 @@ function Home() {
       <div className="row">
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
-            <div key={product.id} className="col-lg-4 col-md-6 mb-4">
-              <div className="card h-100 shadow-sm">
+            <div key={product.id} className="col-6 col-md-4 col-lg-3 mb-4"> {/* Mobil için 2 sütun, diğerleri için 3-4 sütun */}
+              <div className="card h-100 shadow-sm product-card" onClick={() => handleShowProductModal(product)}> {/* Tıklanabilir kart */}
                 <img src={`https://utumak.onrender.com${product.imageUrl}`} className="card-img-top" alt={product.name} />
                 <div className="card-body d-flex flex-column">
                   <h5 className="card-title">{product.name}</h5>
-                  <p className="card-text text-muted">Kategori: {product.category}</p>
-                  <p className="card-text flex-grow-1">{product.description}</p>
                   <p className="card-text fs-5 text-end">
-                    KDV Hariç: <strong>{parseFloat(product.price).toFixed(2)} TL</strong><br/>
-                    KDV (%{product.vatRate || 20}): <strong>{(parseFloat(product.price) * (parseFloat(product.vatRate || 20) / 100)).toFixed(2)} TL</strong><br/>
-                    KDV Dahil: <strong>{calculateItemPriceWithVat(product).toFixed(2)} TL</strong>
+                    <strong>{parseFloat(product.price).toFixed(2)} TL</strong>
                   </p>
-                  <button className="btn btn-primary mt-auto" onClick={() => addToCart(product)}>
-                    Sepete Ekle
-                  </button>
                 </div>
               </div>
             </div>
@@ -174,7 +181,7 @@ function Home() {
 
       {cart.length > 0 && (
         <div className="fab-container">
-          <button className="fab" onClick={handleShowModal}>
+          <button className={`fab ${cartAnimation ? 'animate-cart' : ''}`} onClick={handleShowCartModal}> {/* Animasyon sınıfı */}
             <i className="bi bi-cart-fill"></i>
             <span className="badge bg-danger rounded-pill cart-badge">
               {cart.reduce((total, item) => total + item.quantity, 0)}
@@ -183,7 +190,8 @@ function Home() {
         </div>
       )}
 
-      <Modal show={showModal} onHide={handleCloseModal} centered>
+      {/* Sepet Modalı */}
+      <Modal show={showCartModal} onHide={handleCloseCartModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>Sipariş Özeti</Modal.Title>
         </Modal.Header>
@@ -216,7 +224,7 @@ function Home() {
           <p className="mt-3">Devam etmek için "WhatsApp ile Gönder" butonuna tıklayın.</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
+          <Button variant="secondary" onClick={handleCloseCartModal}>
             İptal
           </Button>
           <Button variant="success" onClick={sendWhatsAppOrder}>
@@ -224,6 +232,36 @@ function Home() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Ürün Detay Modalı */}
+      {selectedProduct && (
+        <Modal show={showProductModal} onHide={handleCloseProductModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>{selectedProduct.name}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <img src={`https://utumak.onrender.com${selectedProduct.imageUrl}`} className="img-fluid mb-3" alt={selectedProduct.name} />
+            <p><strong>Kategori:</strong> {selectedProduct.category}</p>
+            <p><strong>Açıklama:</strong> {selectedProduct.description}</p>
+            <p className="fs-5">
+              KDV Hariç: <strong>{parseFloat(selectedProduct.price).toFixed(2)} TL</strong><br/>
+              KDV (%{selectedProduct.vatRate || 20}): <strong>{(parseFloat(selectedProduct.price) * (parseFloat(selectedProduct.vatRate || 20) / 100)).toFixed(2)} TL</strong><br/>
+              KDV Dahil: <strong>{calculateItemPriceWithVat(selectedProduct).toFixed(2)} TL</strong>
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseProductModal}>
+              Kapat
+            </Button>
+            <Button variant="primary" onClick={() => {
+              addToCart(selectedProduct);
+              handleCloseProductModal();
+            }}>
+              Sepete Ekle
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </div>
   );
 }
