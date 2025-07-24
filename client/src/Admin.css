@@ -1,0 +1,21 @@
+.admin-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.admin-login-container .card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.admin-panel-container .card-header {
+  font-weight: bold;
+  background-color: #e9ecef;
+}
+
+.admin-panel-container .img-thumbnail {
+  border: 1px solid #dee2e6;
+}
