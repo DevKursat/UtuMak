@@ -1,0 +1,10 @@
+{
+  "builds": [
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
+    }
+  ],
+  "buildCommand": "npm --prefix client run build"
+}
